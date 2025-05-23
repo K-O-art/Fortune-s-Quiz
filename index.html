@@ -1,1 +1,41 @@
-<!DOCTYPE html><html><head><title>FORTUNE'S QUIZ</title></head><body><h1>Launching Fortune's Quiz...</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FORTUNE'S QUIZ</title>
+  <style>
+    body {
+      background-color: black;
+      color: cyan;
+      font-family: Orbitron, sans-serif;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .typing {
+      border-right: 0.15em solid cyan;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: typing 3s steps(30, end), blink 0.5s step-end infinite alternate;
+    }
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+  </style>
+</head>
+<body>
+  <div class="typing">WELCOME TO FORTUNE'S QUIZ</div>
+
+  <script>
+    setTimeout(() => {
+      window.location.href = "login.html"; // or "quiz.html" if you want to skip login
+    }, 4000); // 4 seconds delay
+  </script>
+</body>
+</html>
