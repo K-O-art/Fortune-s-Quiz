@@ -1,283 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FORTUNE'S QUIZ</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
-
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    background: #000;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Orbitron', sans-serif;
-  }
-
-  .container {
-    color: #00f0ff;
-    font-size: 4rem;
-    letter-spacing: 0.15em;
-    text-shadow:
-      0 0 5px #00f0ff,
-      0 0 10px #00f0ff,
-      0 0 20px #00f0ff,
-      0 0 30px #00f0ff;
-    white-space: nowrap;
-    border-right: 0.15em solid #00f0ff;
-    padding-right: 5px;
-    user-select: none;
-  }
-
-  /* Typing animation */
-  @keyframes typing {
-    from { width: 0 }
-    to { width: 23ch }
-  }
-  @keyframes blink {
-    50% { border-color: transparent }
-  }
-
-  .typing {
-    overflow: hidden;
-    white-space: nowrap;
-    animation:
-      typing 4s steps(23) forwards,
-      blink 0.7s step-end infinite;
-    width: 0;
-  }
-
-  /* Particle background */
-  #particles {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    top: 0; left: 0;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>FORTUNE'S QUIZ</title>
+  <link href="https://fonts.googleapis.com/css?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    /* Glowing grid background using pseudo-elements */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 0;
+      background: 
+        repeating-linear-gradient(0deg, #1bfcff10 0 2px, transparent 2px 40px),
+        repeating-linear-gradient(90deg, #1bfcff10 0 2px, transparent 2px 40px);
+      animation: moveBg 8s linear infinite;
+      filter: blur(1px);
+    }
+    @keyframes moveBg {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 40px 40px, 40px 40px; }
+    }
+    .intro-text {
+      position: relative;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      color: #00fff7;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 25px #0ff, 0 0 60px #00fff7;
+      opacity: 0;
+      transform: translateY(-100px);
+      z-index: 1;
+      animation: slideFadeIn 2.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    @keyframes slideFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* Optional: dark overlay for more contrast */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 0;
+    }
+    /* Hide audio controls for auto-play, but allow fallback if needed */
+    audio {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-
-<canvas id="particles"></canvas>
-<div class="container">
-  <div class="typing">WELCOME TO FORTUNE'S QUIZ</div>
-</div>
-
-<audio id="bgMusic" autoplay loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/01/audio_503a95d98c.mp3?filename=relaxing-cinematic-ambient-background-13541.mp3" type="audio/mpeg" />
-</audio>
-
-<script>
-// Particle effect
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let width, height;
-let particlesArray = [];
-
-function initCanvas() {
-  width = window.innerWidth;
-  height = window.innerHeight;
-  canvas.width = width;
-  canvas.height = height;
-}
-initCanvas();
-
-class Particle {
-  constructor() {
-    this.x = Math.random() * width;
-    this.y = Math.random() * height;
-    this.radius = Math.random() * 1.5 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.3;
-    this.speedY = (Math.random() - 0.5) * 0.3;
-  }
-  update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-
-    if(this.x > width) this.x = 0;
-    if(this.x < 0) this.x = width;
-    if(this.y > height) this.y = 0;
-    if(this.y < 0) this.y = height;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.fillStyle = '#00f0ff';
-    ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 6;
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-function createParticles() {
-  for(let i = 0; i < 100; i++) {
-    particlesArray.push(new Particle());
-  }
-}
-
-function animateParticles() {
-  ctx.clearRect(0, 0, width, height);
-  particlesArray.forEach(p => {
-    p.update();
-    p.draw();
-  });
-  requestAnimationFrame(animateParticles);
-}
-
-createParticles();
-animateParticles();
-
-// Redirect after animation completes
-setTimeout(() => {
-  window.location.href = 'login.html'; // change to your desired page
-}, 5000); // 5 seconds delay (match animation duration)
-
-</script>
-
+  <div class="overlay"></div>
+  <div class="intro-text">WELCOME TO FORTUNE'S QUIZ</div>
+  <audio id="bg-audio" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa2b7b.mp3" autoplay loop></audio>
+  <script>
+    // Attempt to auto-play (may be blocked on some mobile browsers)
+    window.onload = () => {
+      const audio = document.getElementById('bg-audio');
+      if (audio) {
+        audio.volume = 0.25; // adjust as needed
+        audio.play().catch(() => {}); // silent fail on browsers that block autoplay
+      }
+    };
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 4000);
+  </script>
 </body>
 </html><!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FORTUNE'S QUIZ</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
-
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    background: #000;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Orbitron', sans-serif;
-  }
-
-  .container {
-    color: #00f0ff;
-    font-size: 4rem;
-    letter-spacing: 0.15em;
-    text-shadow:
-      0 0 5px #00f0ff,
-      0 0 10px #00f0ff,
-      0 0 20px #00f0ff,
-      0 0 30px #00f0ff;
-    white-space: nowrap;
-    border-right: 0.15em solid #00f0ff;
-    padding-right: 5px;
-    user-select: none;
-  }
-
-  /* Typing animation */
-  @keyframes typing {
-    from { width: 0 }
-    to { width: 23ch }
-  }
-  @keyframes blink {
-    50% { border-color: transparent }
-  }
-
-  .typing {
-    overflow: hidden;
-    white-space: nowrap;
-    animation:
-      typing 4s steps(23) forwards,
-      blink 0.7s step-end infinite;
-    width: 0;
-  }
-
-  /* Particle background */
-  #particles {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    top: 0; left: 0;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>FORTUNE'S QUIZ</title>
+  <link href="https://fonts.googleapis.com/css?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    /* Glowing grid background using pseudo-elements */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 0;
+      background: 
+        repeating-linear-gradient(0deg, #1bfcff10 0 2px, transparent 2px 40px),
+        repeating-linear-gradient(90deg, #1bfcff10 0 2px, transparent 2px 40px);
+      animation: moveBg 8s linear infinite;
+      filter: blur(1px);
+    }
+    @keyframes moveBg {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 40px 40px, 40px 40px; }
+    }
+    .intro-text {
+      position: relative;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      color: #00fff7;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 25px #0ff, 0 0 60px #00fff7;
+      opacity: 0;
+      transform: translateY(-100px);
+      z-index: 1;
+      animation: slideFadeIn 2.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    @keyframes slideFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* Optional: dark overlay for more contrast */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 0;
+    }
+    /* Hide audio controls for auto-play, but allow fallback if needed */
+    audio {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-
-<canvas id="particles"></canvas>
-<div class="container">
-  <div class="typing">WELCOME TO FORTUNE'S QUIZ</div>
-</div>
-
-<audio id="bgMusic" autoplay loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/01/audio_503a95d98c.mp3?filename=relaxing-cinematic-ambient-background-13541.mp3" type="audio/mpeg" />
-</audio>
-
-<script>
-// Particle effect
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let width, height;
-let particlesArray = [];
-
-function initCanvas() {
-  width = window.innerWidth;
-  height = window.innerHeight;
-  canvas.width = width;
-  canvas.height = height;
-}
-initCanvas();
-
-class Particle {
-  constructor() {
-    this.x = Math.random() * width;
-    this.y = Math.random() * height;
-    this.radius = Math.random() * 1.5 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.3;
-    this.speedY = (Math.random() - 0.5) * 0.3;
-  }
-  update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-
-    if(this.x > width) this.x = 0;
-    if(this.x < 0) this.x = width;
-    if(this.y > height) this.y = 0;
-    if(this.y < 0) this.y = height;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.fillStyle = '#00f0ff';
-    ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 6;
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-function createParticles() {
-  for(let i = 0; i < 100; i++) {
-    particlesArray.push(new Particle());
-  }
-}
-
-function animateParticles() {
-  ctx.clearRect(0, 0, width, height);
-  particlesArray.forEach(p => {
-    p.update();
-    p.draw();
-  });
-  requestAnimationFrame(animateParticles);
-}
-
-createParticles();
-animateParticles();
-
-// Redirect after animation completes
-setTimeout(() => {
-  window.location.href = 'login.html'; // change to your desired page
-}, 5000); // 5 seconds delay (match animation duration)
-
-</script>
-
+  <div class="overlay"></div>
+  <div class="intro-text">WELCOME TO FORTUNE'S QUIZ</div>
+  <audio id="bg-audio" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa2b7b.mp3" autoplay loop></audio>
+  <script>
+    // Attempt to auto-play (may be blocked on some mobile browsers)
+    window.onload = () => {
+      const audio = document.getElementById('bg-audio');
+      if (audio) {
+        audio.volume = 0.25; // adjust as needed
+        audio.play().catch(() => {}); // silent fail on browsers that block autoplay
+      }
+    };
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 4000);
+  </script>
 </body>
 </html>
